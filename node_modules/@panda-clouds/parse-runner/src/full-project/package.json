@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "jest"
+  },
+  "description": "A mock sub project",
+  "version": "0.1.0",
+  "main": "src/PCParseRunner.js",
+  "engines": {
+    "node": ">= 8"
+  },
+  "dependencies": {
+    "@panda-clouds/string": "^1.0.2"
+  },
+  "devDependencies": {}
+}

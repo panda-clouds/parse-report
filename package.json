@@ -1,0 +1,35 @@
+{
+  "name": "@panda-clouds/parse-report",
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "jest"
+  },
+  "description": "Generate CSV files from an array of Parse Objects",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/panda-clouds/parse-report.git"
+  },
+  "author": {
+    "name": "Marc Smith",
+    "email": "mr.marcsmith@me.com",
+    "url": "https://github.com/mrmarcsmith"
+  },
+  "license": "MIT",
+  "main": "src/PCReport.js",
+  "engines": {
+    "node": ">= 8"
+  },
+  "dependencies": {
+    "@panda-clouds/date": "^1.2.0",
+    "@panda-clouds/number": "^1.0.0",
+    "moment-timezone": "^0.5.26"
+  },
+  "devDependencies": {
+    "@panda-clouds/eslint-config-panda-clouds": "^0.9.0",
+    "@panda-clouds/parse-runner": "^0.22.0",
+    "eslint": "^5.14.1",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "jest": "^24.1.0"
+  }
+}

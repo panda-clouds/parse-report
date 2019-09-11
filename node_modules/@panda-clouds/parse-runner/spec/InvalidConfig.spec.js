@@ -5,7 +5,6 @@ describe('invalid configurations', () => {
 		expect.assertions(1);
 		const parseRunner = new PCParseRunner();
 
-		parseRunner.parseVersion('3.1.3');
 		parseRunner.cloud('myCloud');
 
 		try {
@@ -20,7 +19,6 @@ describe('invalid configurations', () => {
 		expect.assertions(1);
 		const parseRunner = new PCParseRunner();
 
-		parseRunner.parseVersion('3.1.3');
 		parseRunner.projectDir('/my/project');
 
 		try {

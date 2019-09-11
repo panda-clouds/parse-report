@@ -1,4 +1,4 @@
-
+/* eslint-disable camelcase */
 class PCReportError {
 	constructor() {
 		// Empty Constructor

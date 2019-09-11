@@ -67,8 +67,6 @@ class PCReport {
 		if (key.indexOf('.') >= 0) {
 			const subKeys = key.split('.');
 
-			console.log('original::: ' + JSON.stringify(subKeys));
-
 			return subKeys[0];
 		}
 
@@ -78,8 +76,6 @@ class PCReport {
 	static parseMachineKeyForSubKey(key) {
 		if (key && key.indexOf('.') >= 0) {
 			const subKeys = key.split('.');
-
-			console.log('subKey::: ' + JSON.stringify(subKeys));
 
 			return subKeys[1];
 		}
@@ -120,7 +116,7 @@ class PCReport {
 				// object.get('objectId') doesnt work so we access id directly
 				if (aKey === 'id' || aKey === 'objectId') {
 					csvContent += oneObjectOfTheGroup.id + ',';
-				} else if (oneObjectOfTheGroup.has(aKey)) {
+				} else if (oneObjectOfTheGroup && oneObjectOfTheGroup.has(aKey)) {
 					const value = oneObjectOfTheGroup.get(aKey);
 
 					if (value instanceof Parse.Object || value instanceof Parse.User) {
@@ -162,7 +158,8 @@ class PCReport {
 			const timeZone = this.timeZoneValue;
 
 			if (timeZone) {
-				return moment(input).tz(timeZone).format(format);
+				return moment(input).tz(timeZone)
+					.format(format);
 			}
 
 			// default to no timezone
@@ -178,17 +175,30 @@ class PCReport {
 			return '(null)';
 		}
 
-		return '"' + input + '"';
+		// in CSV files the only character that need to be escaped is a "
+		// it is escaped by adding a second " before the "
+		// so "its a "spork"" becomes "its a ""spork"""
+		const returnValue = input.replace(/"/g, '""');
+
+		return '"' + returnValue + '"';
 	}
 
 	async saveCSVFile() {
 		const csvString = this.getCSVString();
 		const name = this.nameValue;
-		const type = this.typeValue;
 		const buff = new Buffer(csvString);
 		const base64data = buff.toString('base64');
 		const file = new Parse.File(name + '.csv', { base64: base64data }, 'text/csv');
 		const savedFile = await file.save();
+
+		return savedFile;
+	}
+
+	async saveCSVReport() {
+		const savedFile = await this.saveCSVFile();
+
+		const name = this.nameValue;
+		const type = this.typeValue;
 
 		// The file has been saved to Parse.
 		let reportObject = new Parse.Object('Report');
@@ -199,8 +209,8 @@ class PCReport {
 		reportObject.set('extention', 'csv');
 		reportObject.set('mimeType', 'text/csv');
 
-		if (this.customBlock) {
-			reportObject = this.customBlock(reportObject);
+		if (this.customBlockValue) {
+			reportObject = this.customBlockValue(reportObject);
 		}
 
 		const savedReport = await reportObject.save(null, { useMasterKey: true });

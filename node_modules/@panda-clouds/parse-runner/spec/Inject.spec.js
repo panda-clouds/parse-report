@@ -20,7 +20,6 @@ let Parse;
 describe('full project', () => {
 	const parseRunner = new PCParseRunner();
 
-	parseRunner.parseVersion('3.4.0');
 	parseRunner.projectDir(__dirname + '/../src/full-project');
 	parseRunner.collectCoverage(false);
 	parseRunner.injectCode(`

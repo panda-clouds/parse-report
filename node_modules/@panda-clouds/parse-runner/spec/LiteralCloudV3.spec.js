@@ -16,7 +16,7 @@ Parse.Cloud.beforeSave('PassClass', request => {
 	// passes by default
 })`;
 
-	parseRunner.parseVersion('3.4.0');
+	parseRunner.parseVersion(version);
 	parseRunner.cloud(cloud);
 
 	beforeAll(async () => {

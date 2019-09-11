@@ -4,7 +4,6 @@ let Parse;
 describe('test Mongo inserts', () => {
 	const parseRunner = new PCParseRunner();
 
-	parseRunner.parseVersion('3.1.3');
 	// NOTICE: no cloud code here...
 
 

@@ -1,5 +1,11 @@
 ## Panda Clouds - ESLint Changelog
 
+### 1.0.0
+- added no-undef
+- added camelcase
+- added new-cap
+- added newline-per-chained-call
+
 ### 0.9.0
 
 - disallowed 'done' in favor of async/await

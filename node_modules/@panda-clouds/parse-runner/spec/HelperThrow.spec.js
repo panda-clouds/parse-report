@@ -20,7 +20,6 @@ describe('helper classes throwing errors ', () => {
 	const parseRunner = new PCParseRunner();
 
 	parseRunner.helperClass('./NumberHelper.js');
-	parseRunner.parseVersion('3.4.0');
 	parseRunner.projectDir(__dirname + '/../src/full-project');
 	parseRunner.collectCoverage(false);
 	beforeAll(async () => {

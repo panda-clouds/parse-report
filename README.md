@@ -34,25 +34,35 @@ const report = new PCReport();
 report.name('August 2019 Financial Report');
 
 // The Keys you want to look for in the objects
-// follows the pattern "CSV Title:keyOnObject"
-report.keys(['Cost Category:cat','Amount Spent:amt','Date of Transaction:date']);
+// follows the patterns
+// A. "keyOnObject"                     => displays "keyOnObject" as the CSV Column Title
+// B. "CSV Title:keyOnObject"           => displays "CSV Title" as the CSV Title
+// C. "CSV Title:keyOnObject.subValue"  => displays "CSV Title" as the CSV Title
+// D. "keyOnObject.subValue"            => displays "keyOnObject" as the CSV Column Title
+report.keys(['date','Cost Category:categ','Amount Spent:amt','Users First Name:user.firstName']);
 
 // Fill the objects
+// Alternativily, these objects could be fetched from the database
+const userPointer = ...
 let obj = new Parse.Object('Receipt');
 obj.set('amt',2883);
-obj.set('cat','car');
+obj.set('categ','car');
 obj.set('date',new Date());
-obj.set('nul',null);
+obj.set('nullKey',null);
+obj.set('user',userPointer);
 const saved = await obj.save();
 
 report.objects([saved]);
 
 // Output options:
-// A: Save a csv object as ParseFile 
-let parseFile = await report.saveCSVFile()
+// A: Get a CSV String
+let csvString = report.getCSVString(); // returns a String
 
-// B: Get a CSV String
-let csvString = report.getCSVString();
+// B: Save a csv object as ParseFile 
+let parseFile = await report.saveCSVFile() // returns a Parse.File
+
+// C: Create a "Report" obejct that has a pointer to the report File
+let parseReportObject = await report.saveCSVReport() // returns a Parse.Object
 
 ```
 
@@ -73,7 +83,7 @@ Example:
 ```javascript
 const report = new PCReport();
 // Name of your file.
-report.keys(['date','My Field:myField']);
+report.keys(['date','My CSV Display Field:myKeyField']);
 ```
 
 ### - objects() *Required*

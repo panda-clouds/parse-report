@@ -4,7 +4,6 @@ const PCParseRunner = require('../src/PCParseRunner.js');
 describe('check beforesave in v3', () => {
 	const parseRunner = new PCParseRunner();
 
-	parseRunner.parseVersion('3.1.3');
 	const cloud =
 `
 const crash = bad value!

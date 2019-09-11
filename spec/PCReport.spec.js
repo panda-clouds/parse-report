@@ -13,7 +13,7 @@ describe('the PCReport.js class', () => {
 	parseRunner.injectCode(`
 const PCReport = require('./PCReport.js');
 
-Parse.Cloud.define('missingKeys', request => {
+Parse.Cloud.define('getCSVString_missingKeys', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -26,7 +26,7 @@ Parse.Cloud.define('missingKeys', request => {
 });
 
 
-Parse.Cloud.define('missingObjects', request => {
+Parse.Cloud.define('getCSVString_missingObjects', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -35,7 +35,7 @@ Parse.Cloud.define('missingObjects', request => {
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('stringValue', request => {
+Parse.Cloud.define('getCSVString_stringValue', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -48,7 +48,7 @@ Parse.Cloud.define('stringValue', request => {
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('numberValue', request => {
+Parse.Cloud.define('getCSVString_numberValue', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -61,21 +61,21 @@ Parse.Cloud.define('numberValue', request => {
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('dateValue', request => {
+Parse.Cloud.define('getCSVString_dateValue', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
 	report.keys(['My Foo:foo']);
 
 	let obj = new Parse.Object('MyClass');
-	const dateValue = new Date(1563580937334);
-	obj.set('foo',dateValue);
+	const getCSVString_dateValue = new Date(1563580937334);
+	obj.set('foo',getCSVString_dateValue);
 	report.objects([obj]);
 
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('pointerValue', async request => {
+Parse.Cloud.define('getCSVString_pointerValue', async request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -93,7 +93,7 @@ Parse.Cloud.define('pointerValue', async request => {
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('nullValue', request => {
+Parse.Cloud.define('getCSVString_nullValue', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -109,7 +109,7 @@ Parse.Cloud.define('nullValue', request => {
 
 
 
-Parse.Cloud.define('noValue', request => {
+Parse.Cloud.define('getCSVString_noValue', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -122,7 +122,7 @@ Parse.Cloud.define('noValue', request => {
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('undefinedValue', request => {
+Parse.Cloud.define('getCSVString_undefinedValue', request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -135,7 +135,7 @@ Parse.Cloud.define('undefinedValue', request => {
 	return report.getCSVString();
 });
 
-Parse.Cloud.define('fullSymphony', async request => {
+Parse.Cloud.define('getCSVString_fullSymphony', async request => {
 	const report = new PCReport();
 
 	report.name('test 1');
@@ -145,8 +145,8 @@ Parse.Cloud.define('fullSymphony', async request => {
 	obj.set('str','bar');
 	obj.set('num',94);
 	// Date
-	const dateValue = new Date(1563580937334);
-	obj.set('dat',dateValue);
+	const getCSVString_dateValue = new Date(1563580937334);
+	obj.set('dat',getCSVString_dateValue);
 	// Pointer
 	let inner = new Parse.Object('MyInnerClass');
 	inner.id = 'ABC123';
@@ -162,17 +162,17 @@ Parse.Cloud.define('fullSymphony', async request => {
 
 Parse.Cloud.define('formatCSVPrimative_Date', request => {
 	const report = new PCReport();
-	const dateValue = new Date(1563580937334);
+	const getCSVString_dateValue = new Date(1563580937334);
 
-	return report.formatCSVPrimative(dateValue);
+	return report.formatCSVPrimative(getCSVString_dateValue);
 });
 
 Parse.Cloud.define('formatCSVPrimative_Date_Dubai_Timezone', request => {
 	const report = new PCReport();
 	report.timeZone('Asia/Dubai')
-	const dateValue = new Date(1563580937334);
+	const getCSVString_dateValue = new Date(1563580937334);
 
-	return report.formatCSVPrimative(dateValue);
+	return report.formatCSVPrimative(getCSVString_dateValue);
 });
 
 Parse.Cloud.define('formatCSVPrimative_Number', request => {
@@ -227,7 +227,100 @@ Parse.Cloud.define('formatCSVPrimative_false_string', request => {
 Parse.Cloud.define('formatCSVPrimative_escape_string', request => {
 	const report = new PCReport();
 
-	return report.formatCSVPrimative("my \\"bad \\n string ");
+	return report.formatCSVPrimative("my \\"bad , \\n string ");
+});
+
+
+
+Parse.Cloud.define('saveCSVReport_stringValue', async request => {
+	const report = new PCReport();
+
+	report.name('test 1');
+	report.keys(['My Foo:foo']);
+
+	let obj = new Parse.Object('MyClass');
+	obj.set('foo','bar');
+	report.objects([obj]);
+
+	const parseFileReportObject = await report.saveCSVReport();
+	const parseFileReport = parseFileReportObject.get('reportFile');
+	const data = await parseFileReport.getData();
+	const string = new Buffer(data, 'base64').toString("ascii");
+	return string
+});
+
+Parse.Cloud.define('saveCSVReport_fullSymphony', async request => {
+	const report = new PCReport();
+
+	report.name('test 1');
+	report.keys(['My String:str','My Number:num','My Date:dat','My Pointer:poi','My Null:nul','My Never set:never']);
+
+	let obj = new Parse.Object('MyClass');
+	obj.set('str','bar');
+	obj.set('num',94);
+	// Date
+	const getCSVString_dateValue = new Date(1563580937334);
+	obj.set('dat',getCSVString_dateValue);
+	// Pointer
+	let inner = new Parse.Object('MyInnerClass');
+	inner.id = 'ABC123';
+	const results = await inner.save();
+	obj.set('poi',results);
+	obj.set('nul',null);
+
+
+	report.objects([obj]);
+
+	const parseFileReportObject = await report.saveCSVReport();
+	const parseFileReport = parseFileReportObject.get('reportFile');
+	const data = await parseFileReport.getData();
+	const string = new Buffer(data, 'base64').toString("ascii");
+	return string
+});
+
+
+Parse.Cloud.define('saveCSVFile_stringValue', async request => {
+	const report = new PCReport();
+
+	report.name('test 1');
+	report.keys(['My Foo:foo']);
+
+	let obj = new Parse.Object('MyClass');
+	obj.set('foo','bar');
+	report.objects([obj]);
+
+	const parseFileReport = await report.saveCSVFile();
+	const data = await parseFileReport.getData();
+	const string = new Buffer(data, 'base64').toString("ascii");
+	return string
+});
+
+Parse.Cloud.define('saveCSVFile_fullSymphony', async request => {
+	const report = new PCReport();
+
+	report.name('test 1');
+	report.keys(['My String:str','My Number:num','My Date:dat','My Pointer:poi','My Null:nul','My Never set:never']);
+
+	let obj = new Parse.Object('MyClass');
+	obj.set('str','bar');
+	obj.set('num',94);
+	// Date
+	const getCSVString_dateValue = new Date(1563580937334);
+	obj.set('dat',getCSVString_dateValue);
+	// Pointer
+	let inner = new Parse.Object('MyInnerClass');
+	inner.id = 'ABC123';
+	const results = await inner.save();
+	obj.set('poi',results);
+	obj.set('nul',null);
+
+
+	report.objects([obj]);
+
+	const parseFileReport = await report.saveCSVFile();
+	const data = await parseFileReport.getData();
+	const string = new Buffer(data, 'base64').toString("ascii");
+	return string
 });
 `);
 
@@ -237,81 +330,237 @@ Parse.Cloud.define('formatCSVPrimative_escape_string', request => {
 
 	afterAll(async () => {
 		await parseRunner.cleanUp();
-	});
+	}, 1000 * 60 * 2);
 
-	describe('getCSVString', () => {
-		it('should pass stringValue', async () => {
+	describe('saveCSVFile', () => {
+		it('should pass saveCSVFile_stringValue', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('stringValue');
+			const results = await Parse.Cloud.run('saveCSVFile_stringValue');
 
 			expect(results).toBe('My Foo,\n"bar"\n');
 		});
 
-		it('should pass numberValue', async () => {
+		// it('should pass saveCSVFile_numberValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVFile_numberValue');
+
+		// 	expect(results).toBe('My Foo,\n43\n');
+		// });
+
+		// it('should pass saveCSVFile_dateValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVFile_dateValue');
+
+		// 	expect(results).toBe('My Foo,\n"July 20, 2019 12:02 AM"\n');
+		// });
+
+		// it('should pass saveCSVFile_pointerValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVFile_pointerValue');
+
+		// 	expect(results).toBe('My Foo,\nABC123\n');
+		// });
+
+		// it('should pass saveCSVFile_nullValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVFile_nullValue');
+
+		// 	expect(results).toBe('My Foo,\n(null)\n');
+		// });
+
+		// it('should pass saveCSVFile_noValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVFile_noValue');
+
+		// 	expect(results).toBe('My Foo,\n(null)\n');
+		// });
+
+		// it('should pass saveCSVFile_undefinedValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVFile_undefinedValue');
+
+		// 	expect(results).toBe('My Foo,\n(null)\n');
+		// });
+
+		// it('should fail saveCSVFile_missingObjects', async () => {
+		// 	expect.assertions(1);
+
+		// 	await expect(Parse.Cloud.run('saveCSVFile_missingObjects')).rejects.toThrow(BBReportError.missing_objects());
+		// });
+
+		// it('should fail saveCSVFile_missingKeys', async () => {
+		// 	expect.assertions(1);
+
+		// 	await expect(Parse.Cloud.run('saveCSVFile_missingKeys')).rejects.toThrow(BBReportError.missing_keys());
+		// });
+
+		it('should pass saveCSVFile_fullSymphony', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('numberValue');
+			const results = await Parse.Cloud.run('saveCSVFile_fullSymphony');
+
+			expect(results).toBe('My String,My Number,My Date,My Pointer,My Null,My Never set,\n"bar",94,"July 20, 2019 12:02 AM",ABC123,(null),(null)\n');
+		});
+	});
+
+	describe('saveCSVReport', () => {
+		it('should pass saveCSVReport_stringValue', async () => {
+			expect.assertions(1);
+
+			const results = await Parse.Cloud.run('saveCSVReport_stringValue');
+
+			expect(results).toBe('My Foo,\n"bar"\n');
+		});
+
+		// it('should pass saveCSVReport_numberValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVReport_numberValue');
+
+		// 	expect(results).toBe('My Foo,\n43\n');
+		// });
+
+		// it('should pass saveCSVReport_dateValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVReport_dateValue');
+
+		// 	expect(results).toBe('My Foo,\n"July 20, 2019 12:02 AM"\n');
+		// });
+
+		// it('should pass saveCSVReport_pointerValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVReport_pointerValue');
+
+		// 	expect(results).toBe('My Foo,\nABC123\n');
+		// });
+
+		// it('should pass saveCSVReport_nullValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVReport_nullValue');
+
+		// 	expect(results).toBe('My Foo,\n(null)\n');
+		// });
+
+		// it('should pass saveCSVReport_noValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVReport_noValue');
+
+		// 	expect(results).toBe('My Foo,\n(null)\n');
+		// });
+
+		// it('should pass saveCSVReport_undefinedValue', async () => {
+		// 	expect.assertions(1);
+
+		// 	const results = await Parse.Cloud.run('saveCSVReport_undefinedValue');
+
+		// 	expect(results).toBe('My Foo,\n(null)\n');
+		// });
+
+		// it('should fail saveCSVReport_missingObjects', async () => {
+		// 	expect.assertions(1);
+
+		// 	await expect(Parse.Cloud.run('saveCSVReport_missingObjects')).rejects.toThrow(BBReportError.missing_objects());
+		// });
+
+		// it('should fail saveCSVReport_missingKeys', async () => {
+		// 	expect.assertions(1);
+
+		// 	await expect(Parse.Cloud.run('saveCSVReport_missingKeys')).rejects.toThrow(BBReportError.missing_keys());
+		// });
+
+		it('should pass saveCSVReport_fullSymphony', async () => {
+			expect.assertions(1);
+
+			const results = await Parse.Cloud.run('saveCSVReport_fullSymphony');
+
+			expect(results).toBe('My String,My Number,My Date,My Pointer,My Null,My Never set,\n"bar",94,"July 20, 2019 12:02 AM",ABC123,(null),(null)\n');
+		});
+	});
+
+	describe('getCSVString', () => {
+		it('should pass getCSVString_stringValue', async () => {
+			expect.assertions(1);
+
+			const results = await Parse.Cloud.run('getCSVString_stringValue');
+
+			expect(results).toBe('My Foo,\n"bar"\n');
+		});
+
+		it('should pass getCSVString_numberValue', async () => {
+			expect.assertions(1);
+
+			const results = await Parse.Cloud.run('getCSVString_numberValue');
 
 			expect(results).toBe('My Foo,\n43\n');
 		});
 
-		it('should pass dateValue', async () => {
+		it('should pass getCSVString_dateValue', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('dateValue');
+			const results = await Parse.Cloud.run('getCSVString_dateValue');
 
 			expect(results).toBe('My Foo,\n"July 20, 2019 12:02 AM"\n');
 		});
 
-		it('should pass pointerValue', async () => {
+		it('should pass getCSVString_pointerValue', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('pointerValue');
+			const results = await Parse.Cloud.run('getCSVString_pointerValue');
 
 			expect(results).toBe('My Foo,\nABC123\n');
 		});
 
-		it('should pass nullValue', async () => {
+		it('should pass getCSVString_nullValue', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('nullValue');
+			const results = await Parse.Cloud.run('getCSVString_nullValue');
 
 			expect(results).toBe('My Foo,\n(null)\n');
 		});
 
-		it('should pass noValue', async () => {
+		it('should pass getCSVString_noValue', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('noValue');
+			const results = await Parse.Cloud.run('getCSVString_noValue');
 
 			expect(results).toBe('My Foo,\n(null)\n');
 		});
 
-		it('should pass undefinedValue', async () => {
+		it('should pass getCSVString_undefinedValue', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('undefinedValue');
+			const results = await Parse.Cloud.run('getCSVString_undefinedValue');
 
 			expect(results).toBe('My Foo,\n(null)\n');
 		});
 
-		it('should fail missingObjects', async () => {
+		it('should fail getCSVString_missingObjects', async () => {
 			expect.assertions(1);
 
-			await expect(Parse.Cloud.run('missingObjects')).rejects.toThrow(BBReportError.missing_objects());
+			await expect(Parse.Cloud.run('getCSVString_missingObjects')).rejects.toThrow(BBReportError.missing_objects());
 		});
 
-		it('should fail missingKeys', async () => {
+		it('should fail getCSVString_missingKeys', async () => {
 			expect.assertions(1);
 
-			await expect(Parse.Cloud.run('missingKeys')).rejects.toThrow(BBReportError.missing_keys());
+			await expect(Parse.Cloud.run('getCSVString_missingKeys')).rejects.toThrow(BBReportError.missing_keys());
 		});
 
-		it('should pass fullSymphony', async () => {
+		it('should pass getCSVString_fullSymphony', async () => {
 			expect.assertions(1);
 
-			const results = await Parse.Cloud.run('fullSymphony');
+			const results = await Parse.Cloud.run('getCSVString_fullSymphony');
 
 			expect(results).toBe('My String,My Number,My Date,My Pointer,My Null,My Never set,\n"bar",94,"July 20, 2019 12:02 AM",ABC123,(null),(null)\n');
 		});
@@ -334,7 +583,7 @@ Parse.Cloud.define('formatCSVPrimative_escape_string', request => {
 			expect(results).toBe('"July 20, 2019 4:02 AM"');
 		});
 
-		it('should pass numberValue', async () => {
+		it('should pass getCSVString_numberValue', async () => {
 			expect.assertions(1);
 
 			const results = await Parse.Cloud.run('formatCSVPrimative_Number');
@@ -403,7 +652,7 @@ Parse.Cloud.define('formatCSVPrimative_escape_string', request => {
 
 			const results = await Parse.Cloud.run('formatCSVPrimative_escape_string');
 
-			expect(results).toBe('"my "bad \n string "');
+			expect(results).toBe('"my ""bad , \n string "');
 		});
 	});
 

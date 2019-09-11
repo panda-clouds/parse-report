@@ -5,7 +5,7 @@
     "test": "jest"
   },
   "description": "Generate CSV files from an array of Parse Objects",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/panda-clouds/parse-report.git"
